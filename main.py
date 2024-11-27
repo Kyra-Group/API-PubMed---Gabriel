@@ -41,3 +41,19 @@ async def busqueda_pubmed(keyword: str = Query(..., descripcion = "Palabra filtr
         "retmode": "xml",  # Formato de respuesta para artículos
     }
 
+    efetch_response = await client.get(efetch_url, params=efetch_parametros)
+    if efetch_response.status_code != 200:
+            raise HTTPException(status_code=500, detail="Error en la solicitud a PubMed efetch")
+        
+        # Procesa los datos de efetch (en este caso en formato XML, puedes usar JSON si disponible)
+    efetch_data = efetch_response.text
+        # Para un procesamiento más avanzado, necesitarías analizar el XML o cambiar a JSON si lo soporta
+        
+        # Aquí puedes agregar un filtro para buscar el `keyword` en el título
+        # NOTA: Requiere análisis del texto recibido o cambiar a JSON si es soportado.
+        
+    return {
+         "keyword": keyword,
+         "idlist": idlist,
+           "details": efetch_data,  # Devuelve los detalles en texto crudo por simplicidad
+    }
