@@ -3,10 +3,10 @@ name: CI for API-PubMed---Gabriel # Este es el nombre del flujo de trabajo
 on:
   push: # El flujo se ejecutará cuando se haga un push a la rama principal
     branches:
-      - main
+      - master
   pull_request: # También se ejecutará al crear un pull request a la rama principal
     branches:
-      - main
+      - master
 
 jobs:
   test:
