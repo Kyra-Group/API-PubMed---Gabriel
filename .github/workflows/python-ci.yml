@@ -1,0 +1,60 @@
+name: CI for API-PubMed---Gabriel # Este es el nombre del flujo de trabajo
+
+on:
+  push: # El flujo se ejecutará cuando se haga un push a la rama principal
+    branches:
+      - main
+  pull_request: # También se ejecutará al crear un pull request a la rama principal
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest # La máquina virtual usará Ubuntu como sistema operativo
+
+    services:
+      mongo:
+        image: mongo:5.0
+        ports:
+          - 27017:27017 # MongoDB estará disponible en el puerto 27017
+        options: >- # Comandos para verificar si MongoDB está funcionando correctamente
+          --bind_ip_all --smallfiles
+          --health-cmd="mongosh --eval 'db.stats()'" 
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3 
+
+    steps:
+    - name: Checkout code 
+      uses: actions/checkout@v3 # Descarga el código del repositorio
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12 # Configura Python 3.12
+
+    - name: Install dependencies
+      run: |  # Instala las dependencias desde requirements.txt
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi 
+        pip install -r requirements.txt
+        pip install pymongo  # Instala pymongo si no está en requirements.txt
+
+
+    - name: Lint with flake8 (optional) # Realiza un análisis estático del código. Instala la herramienta flake8 para verificar el estilo y las convenciones del código Python.
+      run: |
+        pip install flake8
+        flake8 .
+
+    - name: Run the API server and test MongoDB connection # Verifica la conexión con MongoDB. Define una variable de entorno con la URI para conectarse a MongoDB.
+      env:
+        MONGO_URI: mongodb://localhost:27017
+      run: |
+        echo "Verificando que el entorno funcione correctamente."
+        python -c "from pymongo import MongoClient; client = MongoClient('$MONGO_URI'); print(client.server_info())"
+
+    - name: Run tests (optional)  # Ejecución de pruebas (si las tienes)
+      run: |
+        echo "Ejecutando pruebas automatizadas."
+        pytest  # Ejecuta pytest si tienes pruebas configuradas
+
