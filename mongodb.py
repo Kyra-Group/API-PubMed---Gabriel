@@ -1,6 +1,8 @@
 from pymongo import MongoClient
+import os
 
-client = MongoClient("mongodb://localhost:27017")
+MONGO_URI = os.getenv("MONGO_URI") # "mongodb+srv://Cluster26179:123456asdf@cluster26179.qwr9g.mongodb.net/?retryWrites=true&w=majority"
+client = MongoClient(MONGO_URI)
 db = client["pubmed_db"]
 
 def save_to_mongodb(articles: list):

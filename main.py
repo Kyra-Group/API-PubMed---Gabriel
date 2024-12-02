@@ -1,8 +1,10 @@
+import os
 from fastapi import FastAPI, HTTPException
 from pubmeds import search_pubmed, fetch_details
 from mongodb import save_to_mongodb
 import traceback # Para saber qué da error
 from bson import ObjectId
+import uvicorn
 
 def serialize_article(article):
     """
@@ -39,3 +41,9 @@ async def search(termino_busqueda: str):
         print("Error procesando la solicitud:")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+if __name__ == "__main__":
+    # Leer el puerto desde la variable de entorno (o usar 8080 por defecto en local)
+    port = int(os.getenv("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)

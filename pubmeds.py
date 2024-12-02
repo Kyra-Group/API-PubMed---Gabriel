@@ -20,7 +20,6 @@ def fetch_details(ids: list):
                  "retmode": "xml"
                  }
     response = requests.get(url, params=params)
-    print("Esto es lo que me devuelve la API en el fetch_details: ",response.text)
     response.raise_for_status()
     try:
         root = ET.fromstring(response.text)
@@ -41,7 +40,6 @@ def fetch_details(ids: list):
                 "abstract": abstract,
                 "authors": authors or ["No authors available"]})
         
-        print("Detalles obtenidos de la API:", articles)
         return articles
     except ET.ParseError as e:
         print("Error parseando XML:", e)
